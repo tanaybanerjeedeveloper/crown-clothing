@@ -3,6 +3,7 @@ import { Switch, Route } from "react-router-dom"; //this the library for 'routin
 import "./App.css";
 //importing components
 import HomePage from "./pages/homepage/homepage";
+import ShopPage from "./pages/shoppage/shoppage";
 
 const HatsPage = () => {
   return (
@@ -17,7 +18,7 @@ function App() {
     <div>
       <Switch>
         <Route exact path="/" component={HomePage} />
-        <Route path="/hats" component={HatsPage} />
+        <Route path="/shop" component={ShopPage} />
       </Switch>
     </div>
   );
