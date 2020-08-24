@@ -1,7 +1,7 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom"; //this the library for 'routing'
 import "./App.css";
-import { auth } from "./firebase/firebase.utils"; // Auth will be helping in making the app aware of which user signedin/out
+import { auth, createUserProfileDocument } from "./firebase/firebase.utils"; // Auth will be helping in making the app aware of which user signedin/out
 //importing components
 import HomePage from "./pages/homepage/homepage";
 import ShopPage from "./pages/shoppage/shoppage";
@@ -27,11 +27,22 @@ class App extends React.Component {
   unsubscribeFromAuth = null; //this is used for unsubscribing from the auth of firebase.
 
   componentDidMount() {
-    this.unsubscribeFromAuth = auth.onAuthStateChanged((user) => {
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
       //here we are subscribing the App compnt with the firebase project
-      this.setState({ currentUser: user });
 
-      console.log(user);
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+        userRef.onSnapshot((snapShot) => {
+          this.setState({
+            currentUser: {
+              id: snapShot.id,
+              ...snapShot.data(),
+            },
+          });
+        });
+      } else {
+        this.setState({ currentUser: userAuth });
+      }
     });
   }
 
