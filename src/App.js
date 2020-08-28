@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route } from "react-router-dom"; //this the library for 'routing'
+import { Switch, Route, Redirect } from "react-router-dom"; //this the library for 'routing'
 import "./App.css";
 import { auth, createUserProfileDocument } from "./firebase/firebase.utils"; // Auth will be helping in making the app aware of which user signedin/out
 import { connect } from "react-redux";
@@ -50,12 +50,29 @@ class App extends React.Component {
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route path="/shop" component={ShopPage} />
-          <Route path="/signin" component={SignInAndSignUpPage} />
+          <Route
+            exact
+            path="/signin"
+            render={() =>
+              this.props.currentUser ? (
+                <Redirect to="/" />
+              ) : (
+                <SignInAndSignUpPage />
+              )
+            }
+          />
         </Switch>
       </div>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  console.log("look here", state.user.currentUser);
+  return {
+    currentUser: state.user.currentUser,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -63,4 +80,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
