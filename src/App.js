@@ -9,6 +9,10 @@ import HomePage from "./pages/homepage/homepage";
 import ShopPage from "./pages/shoppage/shoppage";
 import Header from "./components/header/header";
 import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up";
+import CheckoutPage from './pages/checkout/checkout';
+//importing selectors
+import { selectCurrentUser } from './redux/user/user-selectors';
+import { createStructuredSelector } from 'reselect';
 
 // const HatsPage = () => {
 //   return (
@@ -61,18 +65,16 @@ class App extends React.Component {
               )
             }
           />
+          <Route exact path='/checkout' component={CheckoutPage}/>
         </Switch>
       </div>
     );
   }
 }
 
-const mapStateToProps = (state) => {
-  console.log("look here", state.user.currentUser);
-  return {
-    currentUser: state.user.currentUser,
-  };
-};
+const mapStateToProps = createStructuredSelector({
+  currentUser: selectCurrentUser
+})
 
 const mapDispatchToProps = (dispatch) => {
   return {
