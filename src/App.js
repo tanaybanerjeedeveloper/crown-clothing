@@ -1,18 +1,19 @@
-import React from "react";
-import { Switch, Route, Redirect } from "react-router-dom"; //this the library for 'routing'
-import "./App.css";
-import { auth, createUserProfileDocument } from "./firebase/firebase.utils"; // Auth will be helping in making the app aware of which user signedin/out
-import { connect } from "react-redux";
-import { setCurrentUser } from "./redux/user/user-actions";
+import React from 'react'
+import { Switch, Route, Redirect } from 'react-router-dom' //this the library for 'routing'
+import './App.css'
+import { auth, createUserProfileDocument } from './firebase/firebase.utils' // Auth will be helping in making the app aware of which user signedin/out
+import { connect } from 'react-redux'
+import { setCurrentUser } from './redux/user/user-actions'
 //importing components
-import HomePage from "./pages/homepage/homepage";
-import ShopPage from "./pages/shoppage/shoppage";
-import Header from "./components/header/header";
-import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up";
-import CheckoutPage from './pages/checkout/checkout';
+import HomePage from './pages/homepage/homepage'
+import ShopPage from './pages/shoppage/shoppage'
+import Header from './components/header/header'
+import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up'
+import CheckoutPage from './pages/checkout/checkout'
 //importing selectors
-import { selectCurrentUser } from './redux/user/user-selectors';
-import { createStructuredSelector } from 'reselect';
+import { selectCurrentUser } from './redux/user/user-selectors'
+
+import { createStructuredSelector } from 'reselect'
 
 // const HatsPage = () => {
 //   return (
@@ -23,28 +24,27 @@ import { createStructuredSelector } from 'reselect';
 // }; // just creating a 'HatsPage' component locally in 'App' component
 
 class App extends React.Component {
-  unsubscribeFromAuth = null; //this is used for unsubscribing from the auth of firebase.
+  unsubscribeFromAuth = null //this is used for unsubscribing from the auth of firebase.
 
   componentDidMount() {
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
       //here we are subscribing the App compnt with the firebase project
 
       if (userAuth) {
-        const userRef = await createUserProfileDocument(userAuth);
+        const userRef = await createUserProfileDocument(userAuth)
         userRef.onSnapshot((snapShot) => {
           this.props.setCurrentUser({
             id: snapShot.id,
             ...snapShot.data(),
-          });
-        });
-      } else {
-        this.props.setCurrentUser(userAuth);
+          })
+        })
       }
-    });
+      this.props.setCurrentUser(userAuth)
+    })
   }
 
   componentWillUnmount() {
-    this.unsubscribeFromAuth();
+    this.unsubscribeFromAuth()
   }
 
   render() {
@@ -65,21 +65,21 @@ class App extends React.Component {
               )
             }
           />
-          <Route exact path='/checkout' component={CheckoutPage}/>
+          <Route exact path="/checkout" component={CheckoutPage} />
         </Switch>
       </div>
-    );
+    )
   }
 }
 
 const mapStateToProps = createStructuredSelector({
-  currentUser: selectCurrentUser
+  currentUser: selectCurrentUser,
 })
 
 const mapDispatchToProps = (dispatch) => {
   return {
     setCurrentUser: (user) => dispatch(setCurrentUser(user)),
-  };
-};
+  }
+}
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App)
