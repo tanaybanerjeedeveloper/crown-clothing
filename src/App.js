@@ -1,9 +1,9 @@
 import React from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom' //this the library for 'routing'
 import './App.css'
-import { auth, createUserProfileDocument } from './firebase/firebase.utils' // Auth will be helping in making the app aware of which user signedin/out
+
 import { connect } from 'react-redux'
-import { setCurrentUser } from './redux/user/user-actions'
+
 //importing components
 import HomePage from './pages/homepage/homepage'
 import ShopPage from './pages/shoppage/shoppage'
@@ -12,8 +12,9 @@ import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up
 import CheckoutPage from './pages/checkout/checkout'
 //importing selectors
 import { selectCurrentUser } from './redux/user/user-selectors'
-
 import { createStructuredSelector } from 'reselect'
+//importing actions
+import { checkUserSession } from './redux/user/user-actions'
 
 // const HatsPage = () => {
 //   return (
@@ -27,20 +28,8 @@ class App extends React.Component {
   unsubscribeFromAuth = null //this is used for unsubscribing from the auth of firebase.
 
   componentDidMount() {
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
-      //here we are subscribing the App compnt with the firebase project
-
-      if (userAuth) {
-        const userRef = await createUserProfileDocument(userAuth)
-        userRef.onSnapshot((snapShot) => {
-          this.props.setCurrentUser({
-            id: snapShot.id,
-            ...snapShot.data(),
-          })
-        })
-      }
-      this.props.setCurrentUser(userAuth)
-    })
+    const { checkUserSession } = this.props
+    checkUserSession()
   }
 
   componentWillUnmount() {
@@ -78,7 +67,7 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+    checkUserSession: () => dispatch(checkUserSession()),
   }
 }
 
